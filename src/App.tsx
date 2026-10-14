@@ -63,7 +63,7 @@ export default function App() {
         <div className={`navigation-shell ${navigationOpen ? 'is-open' : ''}`}>
           <aside className="category-pane">
             <div className="mobile-nav-head"><strong>便签导航</strong><button aria-label="关闭导航" onClick={() => setNavigationOpen(false)}><X /></button></div>
-            <label className="search-box"><Search /><input aria-label="搜索便签" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="快速搜索关键字" /></label>
+            <label className="search-box"><Search /><input id="note-search" name="note-search" aria-label="搜索便签" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="快速搜索关键字" /></label>
             <div className="section-label"><ChevronDown />便签<button aria-label="添加分类"><Plus /></button></div>
             <span className="sr-only">{notes.notes.length} 张便签</span>
             <nav className="category-list" aria-label="便签分类">
@@ -109,9 +109,9 @@ export default function App() {
           </div>
 
           <div className="ruled-paper">
-            <input className="title-input" aria-label="便签标题" value={active.title} onChange={(event) => notes.updateActive({ title: event.target.value, content: active.content })} placeholder="无标题便签" />
+            <input id="note-title" name="note-title" className="title-input" aria-label="便签标题" value={active.title} onChange={(event) => notes.updateActive({ title: event.target.value, content: active.content })} placeholder="无标题便签" />
             {view === 'write' ? (
-              <textarea aria-label="便签内容" value={active.content} onChange={(event) => notes.updateActive({ title: active.title, content: event.target.value })} placeholder="写点什么吧…" autoFocus />
+              <textarea id="note-content" name="note-content" aria-label="便签内容" value={active.content} onChange={(event) => notes.updateActive({ title: active.title, content: event.target.value })} placeholder="写点什么吧…" autoFocus />
             ) : (
               <article className="markdown-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{active.content || '*这张便签还是空的。*'}</ReactMarkdown></article>
             )}
