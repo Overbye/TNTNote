@@ -3,8 +3,8 @@
   --line: #ded6c7; --text: #504940; --muted: #b8aa98; --accent: #d4a55e; --danger: #ed6967;
 }
 
-.app-shell { min-height: 100vh; min-height: 100dvh; overflow: hidden; color: var(--text); background: var(--canvas); }
-.main-toolbar { height: 62px; display: grid; grid-template-columns: 270px 448px 1fr; align-items: stretch; color: #fff; background: linear-gradient(#918175, #817166); border-bottom: 1px solid #65584f; box-shadow: inset 0 1px #b9aba1, 0 1px 3px #5f514a55; position: relative; z-index: 30; }
+.app-shell { width: 100%; height: 100vh; height: 100dvh; display: grid; grid-template-rows: 62px minmax(0, 1fr); overflow: hidden; color: var(--text); background: var(--canvas); }
+.main-toolbar { height: auto; min-width: 0; display: grid; grid-template-columns: 270px 448px minmax(0, 1fr); align-items: stretch; color: #fff; background: linear-gradient(#918175, #817166); border-bottom: 1px solid #65584f; box-shadow: inset 0 1px #b9aba1, 0 1px 3px #5f514a55; position: relative; z-index: 30; }
 .brand-zone { display: flex; align-items: center; gap: 18px; padding: 0 18px; border-right: 1px solid #73645a; box-shadow: inset -1px 0 #9d8d81; }
 .hamburger { width: 23px; height: 32px; padding: 0; display: grid; place-items: center; border: 0; background: none; color: #fff; cursor: pointer; }
 .hamburger svg { width: 22px; }
@@ -18,8 +18,11 @@
 .tool-button svg { width: 23px; height: 23px; stroke-width: 2.6; }
 .tool-button.danger { border-color: #bf4b4b; background: linear-gradient(#f47c79, #e75f5d); box-shadow: inset 0 1px #ffaaa7, 0 1px 1px #674640; }
 
-.desktop-workspace { height: calc(100vh - 62px); height: calc(100dvh - 62px); display: grid; grid-template-columns: 718px 1fr; }
-.navigation-shell { min-width: 0; display: grid; grid-template-columns: 270px 448px; }
+.desktop-workspace { min-width: 0; min-height: 0; display: grid; grid-template-columns: 270px 448px minmax(0, 1fr); overflow: hidden; }
+.navigation-shell { display: contents; }
+.category-pane { grid-column: 1; }
+.note-pane { grid-column: 2; }
+.editor-pane { grid-column: 3; }
 .category-pane, .note-pane, .editor-pane { min-width: 0; min-height: 0; background: var(--canvas); }
 .category-pane { position: relative; display: flex; flex-direction: column; border-right: 1px solid #d2cabc; }
 .search-box { height: 50px; padding: 0 10px; display: flex; align-items: center; border-bottom: 1px solid var(--line); color: #a48f7c; }
@@ -98,13 +101,15 @@
 .mobile-new { display: none; }
 
 @media (max-width: 1100px) {
-  .main-toolbar { grid-template-columns: 250px 380px 1fr; }.desktop-workspace { grid-template-columns: 630px 1fr; }.navigation-shell { grid-template-columns: 250px 380px; }.tool-button { width: 58px; }.note-meta span:first-of-type { display: none; }
+  .main-toolbar, .desktop-workspace { grid-template-columns: 250px 380px minmax(0, 1fr); }.tool-button { width: 58px; }.note-meta span:first-of-type { display: none; }
 }
 
-@media (max-width: 760px) {
-  .main-toolbar { height: 56px; display: flex; }.brand-zone { width: auto; flex: 1; border-right: 0; box-shadow: none; }.brand-title { font-size: 17px; }.primary-actions { display: none; }.end-actions { padding: 0 10px; gap: 8px; }.tool-button { width: 46px; height: 36px; }.tool-button:not(.danger) { display: none; }.tool-button svg { width: 20px; }
-  .desktop-workspace { height: calc(100dvh - 56px); display: block; }.editor-pane { height: 100%; }
-  .navigation-shell { position: fixed; z-index: 60; inset: 0 8% 0 0; grid-template-columns: 42% 58%; transform: translateX(-104%); transition: transform .22s ease; box-shadow: 20px 0 60px #392f2855; }.navigation-shell.is-open { transform: translateX(0); }.navigation-scrim { position: fixed; z-index: 55; inset: 0; border: 0; background: #40362f80; }
+@media (max-width: 900px) {
+  .app-shell { grid-template-rows: 56px minmax(0, 1fr); }
+  .main-toolbar { height: auto; display: flex; }.brand-zone { width: auto; flex: 1; border-right: 0; box-shadow: none; }.brand-title { font-size: 17px; }.primary-actions { display: none; }.end-actions { padding: 0 10px; gap: 8px; }.tool-button { width: 46px; height: 36px; }.tool-button:not(.danger) { display: none; }.tool-button svg { width: 20px; }
+  .desktop-workspace { display: block; overflow: hidden; }.editor-pane { height: 100%; }
+  .navigation-shell { position: fixed; z-index: 60; inset: 0 8% 0 0; display: grid; grid-template-columns: 42% 58%; transform: translateX(-104%); transition: transform .22s ease; box-shadow: 20px 0 60px #392f2855; }.navigation-shell.is-open { transform: translateX(0); }.navigation-scrim { position: fixed; z-index: 55; inset: 0; border: 0; background: #40362f80; }
+  .category-pane, .note-pane, .editor-pane { grid-column: auto; }
   .category-pane, .note-pane { height: 100%; }.mobile-nav-head { height: 56px; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; color: #fff; background: linear-gradient(#918175, #817166); border-bottom: 1px solid #675951; }.mobile-nav-head button { border: 0; color: #fff; background: transparent; }.mobile-nav-head svg { width: 20px; }.search-box { height: 48px; }.category-list button { height: 47px; padding: 0 12px; }.category-list b { display: none; }.category-list span { font-size: 12px; }.section-label { height: 45px; }.note-pane-mobile-title { height: 56px; padding: 0 14px; display: flex; align-items: center; gap: 8px; color: #6d6054; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; }.note-pane-mobile-title svg { width: 17px; }.note-row { height: 58px; }.note-select { grid-template-rows: 18px 22px; padding-left: 14px; }.list-footer { display: none; }
   .format-toolbar { height: 48px; padding: 0 10px; }.mobile-back { display: flex; align-items: center; gap: 4px; border: 0; color: #927a64; background: transparent; font-size: 12px; }.mobile-back svg { width: 18px; }.mode-menu, .format-actions, .note-meta { display: none; }.mobile-preview { width: 38px; height: 38px; margin-left: auto; display: grid; place-items: center; border: 0; color: #9d866e; background: transparent; }.mobile-preview svg { width: 19px; }
   .ruled-paper { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 43px, #ded7c9 43px, #ded7c9 44px); }.title-input { width: calc(100% - 36px); height: 44px; margin: 0 18px; font-size: 16px; line-height: 44px; }.ruled-paper textarea, .markdown-body { min-height: calc(100% - 44px); padding: 0 18px 90px; font-size: 14px; line-height: 44px; }.markdown-body p, .markdown-body li, .markdown-body h1, .markdown-body h2, .markdown-body h3 { line-height: 44px; }
