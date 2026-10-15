@@ -16,6 +16,7 @@ type ViewMode = 'write' | 'preview'
 
 const formatDay = (value: string) => new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric' }).format(new Date(value))
 const formatClock = (value: string) => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date(value))
+const isMobileLayout = () => typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 900px)').matches
 
 function ToolButton({ label, danger, children, onClick }: { label: string; danger?: boolean; children: ReactNode; onClick?: () => void }) {
   return <button className={`tool-button ${danger ? 'danger' : ''}`} aria-label={label} title={label} onClick={onClick}>{children}</button>
@@ -25,7 +26,8 @@ export default function App() {
   const notes = useNotes()
   const [query, setQuery] = useState('')
   const [view, setView] = useState<ViewMode>('write')
-  const [navigationOpen, setNavigationOpen] = useState(false)
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false)
+  const [desktopCategoryCollapsed, setDesktopCategoryCollapsed] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<string>()
 
   const filtered = useMemo(() => {
@@ -36,14 +38,21 @@ export default function App() {
   if (!notes.ready || !notes.activeNote) return <main className="loading"><span className="app-icon"><Pencil /></span><p>正在打开便签…</p></main>
   const active = notes.activeNote
 
-  const selectNote = (id: string) => { notes.setActiveId(id); setNavigationOpen(false); setView('write') }
-  const createNew = () => { notes.addNote(); setNavigationOpen(false); setView('write') }
+  const selectNote = (id: string) => { notes.setActiveId(id); setMobileNavigationOpen(false); setView('write') }
+  const createNew = () => { notes.addNote(); setMobileNavigationOpen(false); setView('write') }
+  const toggleNavigation = () => {
+    if (isMobileLayout()) {
+      setMobileNavigationOpen((isOpen) => !isOpen)
+      return
+    }
+    setDesktopCategoryCollapsed((isCollapsed) => !isCollapsed)
+  }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${desktopCategoryCollapsed ? 'desktop-category-collapsed' : ''}`}>
       <header className="main-toolbar">
         <div className="brand-zone">
-          <button className="hamburger" aria-label="打开导航" onClick={() => setNavigationOpen(true)}><Menu /></button>
+          <button className="hamburger" aria-label="切换目录" aria-controls="note-navigation" onClick={toggleNavigation}><Menu /></button>
           <span className="brand-title">TNTNote</span>
         </div>
         <div className="toolbar-group primary-actions">
@@ -59,10 +68,10 @@ export default function App() {
       </header>
 
       <section className="desktop-workspace">
-        {navigationOpen && <button className="navigation-scrim" aria-label="关闭导航" onClick={() => setNavigationOpen(false)} />}
-        <div className={`navigation-shell ${navigationOpen ? 'is-open' : ''}`}>
+        {mobileNavigationOpen && <button className="navigation-scrim" aria-label="关闭导航" onClick={() => setMobileNavigationOpen(false)} />}
+        <div id="note-navigation" className={`navigation-shell ${mobileNavigationOpen ? 'is-open' : ''}`}>
           <aside className="category-pane">
-            <div className="mobile-nav-head"><strong>便签导航</strong><button aria-label="关闭导航" onClick={() => setNavigationOpen(false)}><X /></button></div>
+            <div className="mobile-nav-head"><strong>便签导航</strong><button aria-label="关闭导航" onClick={() => setMobileNavigationOpen(false)}><X /></button></div>
             <label className="search-box"><Search /><input id="note-search" name="note-search" aria-label="搜索便签" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="快速搜索关键字" /></label>
             <div className="section-label"><ChevronDown />便签<button aria-label="添加分类"><Plus /></button></div>
             <span className="sr-only">{notes.notes.length} 张便签</span>
@@ -99,7 +108,7 @@ export default function App() {
 
         <section className="editor-pane">
           <div className="format-toolbar">
-            <button className="mobile-back" onClick={() => setNavigationOpen(true)}><Menu />便签</button>
+            <button className="mobile-back" onClick={() => setMobileNavigationOpen(true)}><Menu />便签</button>
             <button className="mode-menu" onClick={() => setView(view === 'write' ? 'preview' : 'write')}>{view === 'write' ? '富文本模式' : '预览模式'}<ChevronDown /></button>
             <div className="format-actions" aria-label="格式工具">
               <button aria-label="标题"><Heading2 /></button><button aria-label="对齐"><AlignLeft /></button><button aria-label="列表"><List /></button><button aria-label="粗体"><Bold /></button><button aria-label="引用"><Quote /></button><button aria-label="任务"><CheckSquare /></button>

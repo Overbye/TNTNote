@@ -23,4 +23,11 @@ describe('TNTNote MVP', () => {
     await userEvent.click(screen.getByRole('button', { name: /预览/ }))
     expect(screen.getByText('离线可用', { selector: 'strong' })).toBeInTheDocument()
   })
+  it('collapses the category column instead of opening a desktop overlay', async () => {
+    const { container } = render(<App />)
+    await screen.findByLabelText('便签内容')
+    await userEvent.click(screen.getByRole('button', { name: '切换目录' }))
+    expect(container.querySelector('.app-shell')).toHaveClass('desktop-category-collapsed')
+    expect(container.querySelector('.navigation-scrim')).not.toBeInTheDocument()
+  })
 })
